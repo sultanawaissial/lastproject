@@ -1,0 +1,97 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}{{ site_settings.site_name|default:"Vantico" }}{% endblock %}</title>
+  <meta name="description" content="{{ site_settings.site_description|default:"Premium watches" }}">
+  {% if site_settings.site_favicon %}<link rel="icon" href="{{ site_settings.site_favicon.url }}">{% endif %}
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.8/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.13.1/font/bootstrap-icons.min.css">
+  <style>
+    :root{--vt-black:#0f0f10;--vt-line:#e8e8e8;--vt-bg:#ffffff;--vt-container:1440px;}
+    body{margin:0;background:var(--vt-bg);color:var(--vt-black);font-family:Inter,Arial,sans-serif;}
+    .vt-container{width:min(var(--vt-container),calc(100% - 40px));margin-inline:auto}
+    .vt-announcement{background:#0e0e0f;color:#fff;text-align:center;padding:9px 15px;font-size:11px;letter-spacing:.9px;text-transform:uppercase}
+    .vt-header{position:sticky;top:0;z-index:1030;background:rgba(255,255,255,.96);border-bottom:1px solid var(--vt-line);backdrop-filter:blur(12px)}
+    .vt-header-row{min-height:74px;display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:28px}
+    .vt-logo{font-size:26px;font-weight:800;letter-spacing:.16em;text-transform:uppercase}
+    .vt-mainnav{display:flex;justify-content:center;gap:26px;font-size:12px;text-transform:uppercase;letter-spacing:.8px}
+    .vt-actions{display:flex;align-items:center;gap:14px}
+    .vt-footer{margin-top:60px;background:#111;color:#fff}
+    .vt-footer-grid{display:grid;grid-template-columns:1.5fr repeat(3,1fr);gap:32px;padding:52px 0 34px}
+    .vt-footer h6{font-size:12px;letter-spacing:1px;text-transform:uppercase;margin:0 0 14px}
+    .vt-footer a{color:#bdbdbd;font-size:13px;line-height:1.8}
+    .vt-footer ul{list-style:none;padding:0;margin:0}
+    .vt-footer-bottom{border-top:1px solid #2b2b2b;padding:18px 0;color:#8e8e8e;font-size:12px}
+  </style>
+  {% block extra_css %}{% endblock %}
+  {% if site_settings.site_header_script %}{{ site_settings.site_header_script|safe }}{% endif %}
+</head>
+<body>
+
+  {% if site_settings.site_annocement_status and site_settings.site_annocement_text %}
+  <div class="vt-announcement">
+    {% if site_settings.site_annocement_link %}<a href="{{ site_settings.site_annocement_link }}" style="color:#fff">{{ site_settings.site_annocement_text }}</a>
+    {% else %}{{ site_settings.site_annocement_text }}{% endif %}
+  </div>
+  {% endif %}
+
+  <header class="vt-header">
+    <div class="vt-container vt-header-row">
+      <a class="vt-logo" href="/">
+        {% if site_settings.site_logo %}<img src="{{ site_settings.site_logo.url }}" alt="{{ site_settings.site_name }}" style="height:32px">
+        {% else %}{{ site_settings.site_name|default:"VANTICO" }}{% endif %}
+      </a>
+
+      <nav class="vt-mainnav">
+         {% for x in navbars %}
+         <a href="{{ x.link }}">{{ x.name }}</a>
+         {% empty %}
+         <a href="{% url 'products' %}">Shop</a>
+         {% endfor %} 
+      </nav>
+
+      <div class="vt-actions">
+        <a href="{% url 'profile' %}" class="vt-icon-btn"><i class="bi bi-person fs-5"></i></a>
+        <button class="vt-icon-btn" type="button" data-bs-toggle="offcanvas" data-bs-target="#cartDrawer"><i class="bi bi-bag fs-5"></i><span id="cartBadge" class="vt-cart-badge">0</span></button>
+      </div>
+    </div>
+  </header>
+
+  <main>{% block content %}{% endblock %}</main>
+
+  <footer class="vt-footer">
+    <div class="vt-container vt-footer-grid">
+      <div>
+        <h6>{{ site_settings.site_name|default:"Vantico" }}</h6>
+        <p style="color:#bdbdbd;font-size:13px">{{ site_settings.site_footer_text|default:"Premium watches for everyday style." }}</p>
+        <p class="d-flex gap-3 fs-5 mt-3">
+          {% if social_links.facebook %}<a href="{{ social_links.facebook }}"><i class="bi bi-facebook"></i></a>{% endif %}
+          {% if social_links.instagram %}<a href="{{ social_links.instagram }}"><i class="bi bi-instagram"></i></a>{% endif %}
+          {% if social_links.youtube %}<a href="{{ social_links.youtube }}"><i class="bi bi-youtube"></i></a>{% endif %}
+        </p>
+      </div>
+
+      {% for col in footer_columns %}
+      <div>
+        <h6>{{ col.title }}</h6>
+        <ul>
+          {% for link in col.links.all %}
+          <li><a href="{{ link.link }}">{{ link.name }}</a></li>
+          {% endfor %}
+        </ul>
+      </div>
+      {% endfor %}
+    </div>
+    <div class="vt-footer-bottom">
+      <div class="vt-container">{{ site_settings.site_copyright_text|default:"© 2026 Vantico. All rights reserved." }}</div>
+    </div>
+  </footer>
+
+  {% if site_settings.site_footer_script %}{{ site_settings.site_footer_script|safe }}{% endif %}
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.8/js/bootstrap.bundle.min.js"></script>
+  {% block extra_js %}{% endblock %}
+</body>
+</html>

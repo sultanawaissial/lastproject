@@ -1,0 +1,29 @@
+{% extends "admin/base.html" %}
+{% load static %}
+
+{% block title %}{{ title }} | Vantico Admin{% endblock %}
+
+{% block extrastyle %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.13.1/font/bootstrap-icons.min.css">
+<style>
+:root{--primary:#111;--accent:#b48a54}
+#header{background:#111;color:#fff;border-bottom:3px solid var(--accent)}
+#header a{color:#fff}
+#header #branding h1{font-weight:800;letter-spacing:.15em;text-transform:uppercase}
+#header #branding h1 i{color:var(--accent);margin-right:8px}
+.module h2, .module caption{background:#111;color:#fff;letter-spacing:.8px;text-transform:uppercase;font-size:12px}
+a.section{color:#111;font-weight:700}
+div.breadcrumbs{background:#f6f6f4;color:#111;border-bottom:1px solid #e8e8e8}
+.button, input[type=submit]{background:#111!important;border-radius:0!important;text-transform:uppercase;letter-spacing:.8px;font-size:12px}
+.button.default{background:var(--accent)!important}
+#nav-sidebar .current-model{background:#f6f6f4;border-left:3px solid var(--accent)}
+</style>
+{% endblock %}
+
+{% block branding %}
+<h1 id="site-name"><a href="{% url 'admin:index' %}"><i class="bi bi-watch"></i> VANTICO ADMIN</a></h1>
+{% endblock %}
+
+{% block nav-global %}
+<a href="/" style="color:#fff;margin-left:20px"><i class="bi bi-box-arrow-up-right"></i> View Site</a>
+{% endblock %}

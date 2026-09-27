@@ -1,0 +1,50 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Admin Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 flex">
+<aside class="w-64 bg-gray-900 text-white min-h-screen fixed p-6">
+    <h1 class="text-2xl font-bold mb-8">Vantico Admin</h1>
+    <a href="{% url 'my_admin' %}" class="block py-2 px-3 bg-gray-800 rounded">Dashboard</a>
+    <a href="/admin/" class="block py-2 px-3 mt-2 hover:bg-gray-800 rounded">Django Admin</a>
+    <a href="/" class="block py-2 px-3 mt-2 hover:bg-gray-800 rounded">View Site</a>
+</aside>
+<main class="flex-1 ml-64 p-8">
+    <h2 class="text-3xl font-bold">Dashboard</h2>
+    <p class="text-gray-500 mb-8">Welcome back!</p>
+    <div class="grid grid-cols-4 gap-6 mb-8">
+        <div class="bg-white p-6 rounded-xl shadow-sm border-l-4 border-blue-500">
+            <p class="text-sm text-gray-500">Total Orders</p>
+            <h3 class="text-3xl font-bold">{{ orders }}</h3>
+        </div>
+        <div class="bg-white p-6 rounded-xl shadow-sm border-l-4 border-green-500">
+            <p class="text-sm text-gray-500">Total Products</p>
+            <h3 class="text-3xl font-bold">{{ products }}</h3>
+        </div>
+        <div class="bg-white p-6 rounded-xl shadow-sm border-l-4 border-yellow-500">
+            <p class="text-sm text-gray-500">Pending Orders</p>
+            <h3 class="text-3xl font-bold">{{ pending_orders }}</h3>
+        </div>
+        <div class="bg-white p-6 rounded-xl shadow-sm border-l-4 border-purple-500">
+            <p class="text-sm text-gray-500">Total Revenue</p>
+            <h3 class="text-3xl font-bold">Rs. {{ revenue }}</h3>
+            <p class="text-xs text-gray-400">All time: Rs. {{ total_revenue_all }}</p>
+        </div>
+    </div>
+
+    <div class="bg-white rounded-xl shadow-sm p-6">
+        <h3 class="font-bold mb-4">Recent Orders</h3>
+        {% if recent_orders %}
+            {% for o in recent_orders %}
+            <div class="flex justify-between py-2 border-b">{{ o.order_id }} - Rs. {{ o.total_price }} - {{ o.status }}</div>
+            {% endfor %}
+        {% else %}
+            <p class="text-gray-400 text-center py-4">No orders yet - Add some products from Django admin</p>
+        {% endif %}
+    </div>
+</main>
+</body>
+</html>

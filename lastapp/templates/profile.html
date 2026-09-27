@@ -1,0 +1,170 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}My Account | Vantico Watches{% endblock %}
+{% block meta_description %}Manage your Vantico account, orders, wishlist and profile information.{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+<style>
+  /* tumhara sara CSS same rahega - wohi paste kar diya */
+  .profile-page{background:#f5f5f5;min-height:calc(100vh - 120px);padding:28px 0 70px;}
+  .profile-layout{display:grid;grid-template-columns:250px 1fr;gap:18px;}
+  .profile-sidebar,.profile-main-card,.profile-order-card,.profile-stat{background:#fff;border:1px solid #e7e7e7;}
+  .profile-sidebar{padding:0}
+  .profile-user{padding:22px 18px;border-bottom:1px solid #eee;display:flex;align-items:center;gap:13px;}
+  .profile-avatar{width:52px;height:52px;border-radius:50%;background:#111;color:#fff;display:grid;place-items:center;font-size:21px;font-weight:700;}
+  .profile-user strong{font-size:15px;display:block}
+  .profile-user span{font-size:12px;color:#888}
+  .profile-menu{padding:8px 0}
+  .profile-menu a{width:100%;border:0;background:#fff;text-align:left;padding:13px 18px;font-size:13px;color:#444;display:flex;align-items:center;gap:12px;transition:.18s;text-decoration:none}
+  .profile-menu a:hover,.profile-menu a.active{background:#fafafa;color:#111;font-weight:600;border-left:3px solid #f57224;}
+  .profile-main{min-width:0}
+  .profile-main-card{padding:24px}
+  .profile-heading{display:flex;justify-content:space-between;align-items:center;gap:15px;padding-bottom:20px;border-bottom:1px solid #eee;}
+  .profile-heading h1{margin:0;font-size:22px;font-weight:700;}
+  .profile-heading p{margin:5px 0 0;color:#888;font-size:12px;}
+  .profile-edit-btn{border:1px solid #111;background:#111;color:#fff;padding:10px 17px;font-size:12px;}
+  .profile-section{padding-top:22px}
+  .profile-section h3{font-size:15px;margin:0 0 17px;font-weight:700;}
+  .profile-form{display:grid;grid-template-columns:1fr 1fr;gap:18px;}
+  .profile-field label{display:block;font-size:11px;color:#777;margin-bottom:7px;text-transform:uppercase;letter-spacing:.5px;}
+  .profile-field input,.profile-field select{width:100%;border:1px solid #ddd;padding:12px 13px;outline:none;font-size:13px;background:#fff;}
+  .profile-field input:focus,.profile-field select:focus{border-color:#f57224;}
+  .profile-save{margin-top:20px;padding:12px 24px;border:0;background:#f57224;color:#fff;font-size:12px;font-weight:600;}
+  .profile-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:18px;}
+  .profile-stat{padding:18px;}
+  .profile-stat i{font-size:20px;color:#f57224;}
+  .profile-stat strong{display:block;font-size:20px;margin-top:9px;}
+  .profile-stat span{color:#888;font-size:11px;}
+  .profile-orders{margin-top:18px;}
+  .profile-order-card{padding:18px;margin-bottom:10px;}
+  .order-top{display:flex;justify-content:space-between;gap:15px;padding-bottom:13px;border-bottom:1px solid #eee;}
+  .order-top strong{font-size:13px}
+  .order-status{font-size:11px;font-weight:600;}
+  .status-Delivered{color:#18864b} .status-Processing{color:#f57224} .status-Pending{color:#999}
+  .order-bottom{display:flex;justify-content:space-between;align-items:center;gap:15px;padding-top:13px;}
+  .order-bottom span{color:#777;font-size:12px;}
+  .order-view{border:1px solid #ddd;background:#fff;padding:8px 13px;font-size:11px;text-decoration:none;color:#111}
+</style>
+{% endblock %}
+
+{% block content %}
+<section class="profile-page">
+  <div class="vt-container">
+    <div class="profile-layout">
+      <aside class="profile-sidebar">
+        <div class="profile-user">
+          <div class="profile-avatar">{{ user.first_name|first|upper|default:"U" }}</div>
+          <div>
+            <strong>{{ user.first_name|default:user.username }}</strong>
+            <span>My Vantico Account</span>
+          </div>
+        </div>
+        <div class="profile-menu">
+          <a href="{% url 'profile' %}" class="active"><i class="bi bi-person"></i> My Profile</a>
+          <a href="#orders"><i class="bi bi-box-seam"></i> My Orders</a>
+          <a href="#"><i class="bi bi-heart"></i> Wishlist</a>
+          <a href="#"><i class="bi bi-geo-alt"></i> Addresses</a>
+          <a href="{% url 'logout' %}"><i class="bi bi-box-arrow-right"></i> Logout</a>
+        </div>
+      </aside>
+
+      <div class="profile-main">
+        <div class="profile-stats">
+          <div class="profile-stat">
+            <i class="bi bi-box-seam"></i>
+            <strong>{{ total_orders }}</strong>
+            <span>Total Orders</span>
+          </div>
+          <div class="profile-stat">
+            <i class="bi bi-heart"></i>
+            <strong>{{ wishlist_count }}</strong>
+            <span>Wishlist Items</span>
+          </div>
+          <div class="profile-stat">
+            <i class="bi bi-wallet2"></i>
+            <strong>Rs. {{ total_spent }}</strong>
+            <span>Total Spent</span>
+          </div>
+        </div>
+
+        <div class="profile-main-card" id="profilePanel">
+          <div class="profile-heading">
+            <div>
+              <h1>My Profile</h1>
+              <p>View and update your personal information.</p>
+            </div>
+            <button class="profile-edit-btn" id="editProfileBtn" type="button"><i class="bi bi-pencil me-1"></i> Edit Profile</button>
+          </div>
+
+          <div class="profile-section">
+            <h3>Personal Information</h3>
+            <form id="profileForm" method="POST">
+              {% csrf_token %}
+              <div class="profile-form">
+                <div class="profile-field">
+                  <label>Full Name</label>
+                  <input name="full_name" id="fullName" type="text" value="{{ user.first_name }}" disabled>
+                </div>
+                <div class="profile-field">
+                  <label>Email Address</label>
+                  <input name="email" id="email" type="email" value="{{ user.email }}" disabled>
+                </div>
+                <div class="profile-field">
+                  <label>Phone Number</label>
+                  <input name="phone" id="phone" type="tel" value="{{ user.profile.phone }}" disabled>
+                </div>
+                <div class="profile-field">
+                  <label>Gender</label>
+                  <select name="gender" id="gender" disabled>
+                    <option value="" {% if not user.profile.gender %}selected{% endif %}>Prefer not to say</option>
+                    <option value="Male" {% if user.profile.gender == 'Male' %}selected{% endif %}>Male</option>
+                    <option value="Female" {% if user.profile.gender == 'Female' %}selected{% endif %}>Female</option>
+                  </select>
+                </div>
+              </div>
+              <button class="profile-save d-none" id="saveProfileBtn" type="submit">Save Changes</button>
+            </form>
+          </div>
+
+          <div class="profile-orders" id="orders">
+            <h3 class="mb-3">Recent Orders</h3>
+            {% for order in orders %}
+            <div class="profile-order-card">
+              <div class="order-top">
+                <strong>Order #{{ order.order_id }}</strong>
+                <span class="order-status status-{{ order.status }}">{{ order.status }}</span>
+              </div>
+              <div class="order-bottom">
+                <span>{{ order.product_name }} • Rs. {{ order.total_price }}</span>
+                <a href="#" class="order-view">View Order</a>
+              </div>
+            </div>
+            {% empty %}
+            <div class="border p-4 text-center text-secondary small">You have no orders yet.</div>
+            {% endfor %}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+(() => {
+  'use strict';
+  const fields = [document.getElementById('fullName'), document.getElementById('email'), document.getElementById('phone'), document.getElementById('gender')];
+  const editBtn = document.getElementById('editProfileBtn');
+  const saveBtn = document.getElementById('saveProfileBtn');
+  
+  editBtn.addEventListener('click', () => {
+    fields.forEach(f => f.disabled = false);
+    editBtn.classList.add('d-none');
+    saveBtn.classList.remove('d-none');
+  });
+})();
+</script>
+{% endblock %}

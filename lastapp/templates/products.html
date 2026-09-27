@@ -1,0 +1,176 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Shop Watches | Vantico{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&family=Playfair+Display:wght@500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#fbfaf8; --card:#ffffff; --text:#121212; --muted:#7a7a7a;
+    --line:#ece8e3; --accent:#111;
+    --gold: linear-gradient(135deg, #f8e9a1 0%, #f0c27a 50%, #d4af37 100%);
+  }
+  .products-page{background:var(--bg);min-height:100vh;font-family:'Manrope',sans-serif}
+  .products-hero{padding:72px 20px 48px;text-align:center;background: radial-gradient(1200px 500px at 50% -10%, #fff7e6 0%, #ffffff 60%);border-bottom:1px solid var(--line)}
+  .products-hero .eyebrow{font-size:11px;letter-spacing:3.5px;text-transform:uppercase;color:#b89a5a;margin-bottom:14px;font-weight:700}
+  .products-hero h1{font-family:'Playfair Display',serif;font-size:clamp(38px,5vw,62px);font-weight:600;letter-spacing:-1.8px;margin:0;background: linear-gradient(180deg, #111 0%, #3a3a3a 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+  .products-hero p{max-width:640px;margin:16px auto 0;color:var(--muted);font-size:15px;line-height:1.8}
+  .product-categories{position:sticky;top:75px;z-index:900;background:rgba(251,250,248,.85);backdrop-filter:blur(12px);border-bottom:1px solid var(--line)}
+  .category-scroll{display:flex;justify-content:center;gap:10px;flex-wrap:wrap;padding:16px 0}
+  .category-btn{border:1px solid var(--line);background:#fff;color:#222;padding:10px 20px;border-radius:999px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.9px;cursor:pointer;transition:all .25s}
+  .category-btn:hover{transform:translateY(-1px);box-shadow:0 6px 18px rgba(0,0,0,.06)}
+  .category-btn.active{background:var(--accent);color:#fff;border-color:var(--accent);box-shadow:0 10px 22px rgba(0,0,0,.18)}
+  .shop-area{padding:28px 0 70px}
+  .vt-container{max-width:1280px;margin:0 auto;padding:0 20px}
+  .shop-toolbar{padding:16px 0;margin-bottom:26px;display:flex;align-items:center;justify-content:space-between;gap:15px}
+  .results-count{font-size:13px;color:var(--muted)}
+  .results-count b{color:var(--text)}
+  .toolbar-select{border:1px solid var(--line);background:#fff;border-radius:999px;padding:10px 38px 10px 16px;font-size:12px;font-weight:600;outline:none;box-shadow:0 4px 14px rgba(0,0,0,.04)}
+  .products-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:28px 18px}
+  .product-card{background:var(--card);border-radius:20px;overflow:hidden;border:1px solid #eee8e0;transition:all .35s;position:relative}
+  .product-card:hover{transform:translateY(-6px);box-shadow:0 22px 40px rgba(17,17,17,.12);border-color:#e8ddd1}
+  .product-image{position:relative;overflow:hidden;background: radial-gradient(500px 300px at 50% 0%, #ffffff 0%, #f6f2ec 100%);aspect-ratio:1/1.1;display:flex;align-items:center;justify-content:center;padding:18px}
+  .product-image img{width:100%;height:100%;object-fit:contain;transition:transform .6s;mix-blend-mode:multiply;filter: drop-shadow(0 18px 24px rgba(0,0,0,.12));}
+  .product-card:hover .product-image img{transform:scale(1.08) rotate(-2deg)}
+  .quick-btn{position:absolute;left:14px;right:14px;bottom:14px;z-index:3;border:0;border-radius:999px;background:rgba(255,255,255,.92);backdrop-filter:blur(10px);padding:13px 10px;font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:1.1px;box-shadow:0 10px 24px rgba(0,0,0,.16);opacity:0;transform:translateY(14px);transition:.28s;cursor:pointer}
+  .product-card:hover .quick-btn{opacity:1;transform:none}
+  .quick-btn:hover{background:#111;color:#fff}
+  .product-info{padding:16px 16px 18px;background:#fff}
+  .product-type{font-size:10px;color:#b89a5a;text-transform:uppercase;letter-spacing:1.2px;font-weight:800;margin-bottom:6px}
+  .product-name{font-family:'Playfair Display',serif;font-size:15.5px;font-weight:600;margin:0 0 8px;line-height:1.3;color:#121212}
+  .rating{font-size:11px;color:#111;margin-bottom:10px;display:flex;align-items:center;gap:6px}
+  .rating .stars{color:#ffb400;letter-spacing:2px}
+  .rating span{color:#888;font-weight:600}
+  .price-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+  .current-price{font-size:15px;font-weight:800}
+  .shop-benefits{margin-top:64px;display:grid;grid-template-columns:repeat(3,1fr);background:linear-gradient(180deg, #ffffff 0%, #fdfbf7 100%);border:1px solid var(--line);border-radius:22px;overflow:hidden;box-shadow:0 12px 30px rgba(0,0,0,.04)}
+  .benefit{text-align:center;padding:28px 18px;border-right:1px solid var(--line)}
+  .benefit:last-child{border-right:0}
+  .benefit i{font-size:22px;margin-bottom:10px;display:block}
+  .benefit strong{display:block;font-size:11px;letter-spacing:1.2px;text-transform:uppercase;margin-bottom:6px;font-weight:800}
+  .benefit span{font-size:12px;color:var(--muted)}
+  .empty-state{grid-column:1/-1;text-align:center;padding:70px 20px;color:#999;background:#fff;border:1px dashed var(--line);border-radius:20px;display:none}
+  @media(max-width:1100px){.products-grid{grid-template-columns:repeat(3,1fr)}}
+  @media(max-width:760px){.product-categories{top:64px}.category-scroll{justify-content:flex-start;flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none}.category-scroll::-webkit-scrollbar{display:none}.products-grid{grid-template-columns:repeat(2,1fr);gap:16px 12px}.quick-btn{opacity:1;transform:none;padding:11px}.shop-benefits{grid-template-columns:1fr}.benefit{border-right:0;border-bottom:1px solid var(--line)}.benefit:last-child{border-bottom:0}}
+</style>
+{% endblock %}
+
+{% block content %}
+<section class="products-page">
+  <header class="products-hero">
+    <div class="eyebrow">The Collection • Vantico</div>
+    <h1>Shop All Watches</h1>
+    <p>Handpicked formal, stainless-steel, leather, smart & couple watches — crafted for timeless elegance.</p>
+  </header>
+
+  <nav class="product-categories">
+    <div class="vt-container category-scroll">
+      <button class="category-btn active" data-filter="all">All</button>
+      <button class="category-btn" data-filter="men">Men</button>
+      <button class="category-btn" data-filter="women">Women</button>
+      <button class="category-btn" data-filter="smart">Smart Watches</button>
+      <button class="category-btn" data-filter="couple">Couple</button>
+    </div>
+  </nav>
+
+  <div class="vt-container shop-area">
+    <div class="shop-toolbar">
+      <span class="results-count"><b id="visibleCount">{{ products|length }}</b> products found</span>
+      <select class="toolbar-select" id="sortProducts">
+        <option value="featured">Featured</option>
+        <option value="low">Price: Low to High</option>
+        <option value="high">Price: High to Low</option>
+        <option value="name">Name: A-Z</option>
+      </select>
+    </div>
+
+    <section class="products-grid" id="productsGrid">
+      {% for product in products %}
+      {# FIXED: No product.category, no product.categories, no product.product_type - only safe fields #}
+      <article class="product-card" data-category="all" data-price="{{ product.price }}" data-name="{{ product.name }}">
+        <div class="product-image">
+          {% if product.image %}
+            <img src="{{ product.image.url }}" alt="{{ product.name }}" loading="lazy">
+          {% else %}
+            <i class="bi bi-watch" style="font-size:72px; opacity:.15;"></i>
+          {% endif %}
+
+          <button class="quick-btn" type="button"
+            data-add-to-cart
+            data-product-id="{{ product.id }}"
+            data-product-name="{{ product.name }}"
+            data-product-price="{{ product.price }}">
+            <i class="bi bi-bag-plus"></i> Add to Cart
+          </button>
+        </div>
+        <div class="product-info">
+          <div class="product-type">Vantico Edition</div>
+          <h2 class="product-name">{{ product.name }}</h2>
+          <div class="rating"><span class="stars">★★★★★</span> <span>5.0</span></div>
+          <div class="price-row">
+            <span class="current-price">Rs. {{ product.price }}</span>
+          </div>
+        </div>
+      </article>
+      {% empty %}
+      <div style="grid-column:1/-1;text-align:center;padding:60px;background:#fff;border-radius:20px;border:1px dashed #ddd">
+        <p style="font-size:40px">⌚</p>
+        <p>No products found. Add from Django Admin.</p>
+      </div>
+      {% endfor %}
+      <div class="empty-state" id="emptyState">No watches matched your filter.</div>
+    </section>
+
+    <section class="shop-benefits">
+      <div class="benefit"><i class="bi bi-truck"></i><strong>Free Delivery</strong><span>Nationwide on eligible orders</span></div>
+      <div class="benefit"><i class="bi bi-shield-check"></i><strong>1-Year Warranty</strong><span>Premium quality guarantee</span></div>
+      <div class="benefit"><i class="bi bi-arrow-repeat"></i><strong>Easy 30-Day Returns</strong><span>Hassle-free exchange support</span></div>
+    </section>
+  </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+(() => {
+  const grid = document.getElementById('productsGrid');
+  const count = document.getElementById('visibleCount');
+  const sort = document.getElementById('sortProducts');
+  const empty = document.getElementById('emptyState');
+  const filterButtons = [...document.querySelectorAll('.category-btn')];
+  if(!grid || !count || !sort) return;
+  const originalOrder = [...grid.querySelectorAll('.product-card')];
+  let activeFilter = 'all';
+  const cards = () => [...grid.querySelectorAll('.product-card')];
+  function applyState(){
+    let visible = 0;
+    cards().forEach(card => {
+      const filterMatch = activeFilter === 'all' || (card.dataset.category||'').includes(activeFilter);
+      card.hidden = !filterMatch;
+      if(filterMatch) visible++;
+    });
+    count.textContent = visible;
+    if(empty) empty.style.display = visible ? 'none' : 'block';
+    filterButtons.forEach(btn => btn.classList.toggle('active', btn.dataset.filter === activeFilter));
+  }
+  filterButtons.forEach(btn => {
+    btn.addEventListener('click', () => {
+      activeFilter = btn.dataset.filter || 'all';
+      applyState();
+    });
+  });
+  sort.addEventListener('change', () => {
+    let ordered = cards();
+    if(sort.value === 'featured') ordered = originalOrder.slice();
+    if(sort.value === 'low') ordered.sort((a,b) => Number(a.dataset.price) - Number(b.dataset.price));
+    if(sort.value === 'high') ordered.sort((a,b) => Number(b.dataset.price) - Number(a.dataset.price));
+    if(sort.value === 'name') ordered.sort((a,b) => (a.dataset.name || '').localeCompare(b.dataset.name || ''));
+    ordered.forEach(card => grid.insertBefore(card, empty));
+    applyState();
+  });
+  applyState();
+})();
+</script>
+{% endblock %}

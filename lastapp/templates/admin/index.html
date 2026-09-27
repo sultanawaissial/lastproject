@@ -1,0 +1,12 @@
+{% extends "admin/index.html" %}
+{% load static %}
+
+{% block content %}
+<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:24px">
+  <div style="background:#fff;border:1px solid #ececec;padding:18px"><div style="font-size:11px;text-transform:uppercase;letter-spacing:1px;color:#888">Products</div><div style="font-size:28px;font-weight:800">{{ products_count }} <i class="bi bi-watch" style="float:right;opacity:.2"></i></div><a href="/admin/lastapp/product/" style="font-size:11px">Manage →</a></div>
+  <div style="background:#111;color:#fff;padding:18px"><div style="font-size:11px;text-transform:uppercase;letter-spacing:1px;color:#c7b08a">Orders</div><div style="font-size:28px;font-weight:800">{{ orders_count }} <i class="bi bi-bag" style="float:right;opacity:.3"></i></div><a href="/admin/lastapp/order/" style="color:#fff;font-size:11px">Manage →</a></div>
+  <div style="background:#fff;border:1px solid #ececec;padding:18px"><div style="font-size:11px;text-transform:uppercase;letter-spacing:1px;color:#888">Users</div><div style="font-size:28px;font-weight:800">{{ users_count }} <i class="bi bi-people" style="float:right;opacity:.2"></i></div></div>
+  <div style="background:#f6f6f4;border:1px solid #ececec;padding:18px"><div style="font-size:11px;text-transform:uppercase;letter-spacing:1px;color:#888">Revenue</div><div style="font-size:22px;font-weight:800">Rs. {{ total_revenue }}</div><span style="font-size:11px;color:green"><i class="bi bi-arrow-up"></i> Today</span></div>
+</div>
+{{ block.super }}
+{% endblock %}

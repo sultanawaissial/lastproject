@@ -1,0 +1,242 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}{{ site_settings.site_name|default:"Vantico" }} - Premium Timepieces{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;800&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+<style>
+  body{font-family:'Manrope',sans-serif;background:#fbfaf8}
+  /* HERO */
+  .vt-hero{position:relative;background:#0a0a0a;color:#fff;overflow:hidden}
+  .vt-hero .carousel-item{height:min(82vh,760px);min-height:520px;position:relative}
+  .vt-hero-bg-img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:.65}
+  .vt-hero-overlay{position:absolute;inset:0;background:linear-gradient(90deg, rgba(0,0,0,.85) 0%, rgba(0,0,0,.45) 45%, rgba(0,0,0,.15) 100%)}
+  .vt-hero-content{position:relative;z-index:3;height:100%;display:flex;align-items:center}
+  .vt-kicker{font-size:11px;letter-spacing:3.5px;text-transform:uppercase;color:#d4b88a;margin-bottom:14px;font-weight:800}
+  .vt-hero h1{font-family:'Playfair Display',serif;font-size:clamp(36px,5.5vw,64px);line-height:.95;font-weight:700;max-width:600px}
+  .vt-hero p{color:#d6d6d6;font-size:15px;line-height:1.7;margin:16px 0 28px;max-width:480px}
+  .vt-btn-primary{background:#fff;color:#111;border:1px solid #fff;padding:14px 30px;text-transform:uppercase;font-size:12px;letter-spacing:1.2px;font-weight:800;display:inline-flex;gap:10px;text-decoration:none;border-radius:999px;transition:.25s}
+  .vt-btn-primary:hover{background:#111;color:#fff;transform:translateY(-2px)}
+  
+  .vt-section{padding:60px 0}
+  .vt-sec-head{display:flex;justify-content:space-between;align-items:end;margin-bottom:24px}
+  .vt-sec-head h2{font-size:26px;font-weight:800;text-transform:uppercase;margin:0;font-family:'Playfair Display',serif;letter-spacing:-.5px}
+  
+  /* CATEGORIES WITH REAL IMAGES */
+  .vt-cat-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
+  .vt-cat{height:260px;position:relative;border-radius:18px;overflow:hidden;text-decoration:none;isolation:isolate;border:1px solid #e9e3db;transition:.35s}
+  .vt-cat img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transition:transform .6s}
+  .vt-cat:hover img{transform:scale(1.08)}
+  .vt-cat::after{content:'';position:absolute;inset:0;background:linear-gradient(0deg, rgba(0,0,0,.75) 0%, rgba(0,0,0,.15) 60%)}
+  .vt-cat-content{position:absolute;left:18px;bottom:16px;z-index:2;color:#fff}
+  .vt-cat-content b{display:block;font-size:18px;font-family:'Playfair Display',serif;letter-spacing:.3px}
+  .vt-cat-content span{font-size:11px;text-transform:uppercase;letter-spacing:1px;opacity:.9;background:rgba(255,255,255,.18);backdrop-filter:blur(8px);padding:6px 10px;border-radius:999px;margin-top:8px;display:inline-block}
+  .vt-cat:hover{transform:translateY(-4px);box-shadow:0 20px 32px rgba(0,0,0,.18)}
+
+  /* PRODUCTS */
+  .vt-product{background:#fff;border:1px solid #ece6df;transition:.3s;height:100%;display:flex;flex-direction:column;border-radius:18px;overflow:hidden}
+  .vt-product:hover{border-color:#111;transform:translateY(-5px);box-shadow:0 20px 36px rgba(0,0,0,.1)}
+  .vt-product-img{aspect-ratio:1/1;background:radial-gradient(400px 280px at 50% 0%, #fff 0%, #f6f1e9 100%);display:flex;align-items:center;justify-content:center;padding:18px}
+  .vt-product-img img{width:100%;height:100%;object-fit:contain;transition:.5s;filter:drop-shadow(0 14px 20px rgba(0,0,0,.13))}
+  .vt-product:hover .vt-product-img img{transform:scale(1.07)}
+  .vt-product-body{padding:14px 14px 16px;flex:1;display:flex;flex-direction:column}
+  .vt-product-title{font-size:14px;font-weight:700;min-height:36px;line-height:1.35}
+  .vt-price-now{font-weight:800;font-size:14.5px;margin-top:4px}
+  .vt-add{width:100%;background:#111;color:#fff;border:1px solid #111;padding:11px;font-size:11px;text-transform:uppercase;font-weight:800;border-radius:10px;cursor:pointer;transition:.2s;margin-top:auto}
+  .vt-add:hover{background:#fff;color:#111}
+  
+  .vt-scroll{display:flex;gap:18px;overflow:auto;padding-bottom:12px;scrollbar-width:none}
+  .vt-scroll::-webkit-scrollbar{display:none}
+  .vt-scroll > *{min-width:280px;max-width:280px}
+  
+  .vt-deal-banner{background:#fff;border:1px solid #e8e0d6;display:grid;grid-template-columns:1.2fr .8fr;border-radius:22px;overflow:hidden;box-shadow:0 12px 32px rgba(0,0,0,.06)}
+  .vt-deal-left{padding:32px}
+  .vt-deal-img{position:relative;background:#111}
+  .vt-deal-img img{width:100%;height:100%;object-fit:cover;opacity:.9}
+  .vt-time{border:1px solid #111;min-width:58px;text-align:center;padding:10px 6px;border-radius:10px;background:#fff}
+  .vt-trust{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:#e8e0d6;border:1px solid #e8e0d6;border-radius:16px;overflow:hidden}
+  .vt-trust div{background:#fff;padding:20px;display:flex;gap:12px;align-items:center}
+  @media(max-width:900px){.vt-cat-grid{grid-template-columns:1fr 1fr}.vt-deal-banner{grid-template-columns:1fr}.vt-trust{grid-template-columns:1fr 1fr}.vt-cat{height:200px}}
+</style>
+{% endblock %}
+
+{% block content %}
+
+<!-- HERO WITH REAL IMAGE -->
+<section class="vt-hero">
+  <div id="heroCarousel" class="carousel slide" data-bs-ride="carousel">
+    <div class="carousel-inner">
+      {% for slide in carousel %}
+      <div class="carousel-item {% if forloop.first %}active{% endif %}">
+        {% if slide.image %}
+          <img src="{{ slide.image.url }}" class="vt-hero-bg-img" alt="{{ slide.caption }}">
+        {% else %}
+          <img src="https://images.unsplash.com/photo-1523170335258-f5ed11844a49?q=80&w=2000&auto=format&fit=crop" class="vt-hero-bg-img" alt="Vantico Watch">
+        {% endif %}
+        <div class="vt-hero-overlay"></div>
+        <div class="vt-container vt-hero-content">
+          <div>
+            <div class="vt-kicker">{{ site_settings.site_name|default:"Vantico"}} • 2026 Collection</div>
+            <h1>{{ slide.caption|default:"Timeless Design For Modern Life" }}</h1>
+            <p>{{ site_settings.site_description|default:"Swiss-inspired craftsmanship with premium materials. Designed for those who value timeless elegance." }}</p>
+            <a href="{% url 'products' %}" class="vt-btn-primary">Shop Collection <i class="bi bi-arrow-right"></i></a>
+          </div>
+        </div>
+      </div>
+      {% empty %}
+      <div class="carousel-item active">
+        <img src="https://images.unsplash.com/photo-1523170335258-f5ed11844a49?q=80&w=2000&auto=format&fit=crop" class="vt-hero-bg-img" alt="Watch">
+        <div class="vt-hero-overlay"></div>
+        <div class="vt-container vt-hero-content">
+          <div>
+            <div class="vt-kicker">New Collection 2026</div>
+            <h1>Timeless <span style="color:#d4b88a">Design</span> For Modern Life</h1>
+            <p>Premium watches crafted for lifetime elegance.</p>
+            <a href="{% url 'products' %}" class="vt-btn-primary">Shop Collection <i class="bi bi-arrow-right"></i></a>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+    <button class="carousel-control-prev" type="button" data-bs-target="#heroCarousel" data-bs-slide="prev"><span class="carousel-control-prev-icon"></span></button>
+    <button class="carousel-control-next" type="button" data-bs-target="#heroCarousel" data-bs-slide="next"><span class="carousel-control-next-icon"></span></button>
+  </div>
+</section>
+
+<!-- CATEGORIES WITH REAL PHOTOS - NO ICONS -->
+<section class="vt-section">
+  <div class="vt-container">
+    <div class="vt-sec-head"><h2>Shop By Category</h2></div>
+    <div class="vt-cat-grid">
+      <a href="{% url 'products' %}?category=men" class="vt-cat">
+        <img src="https://images.unsplash.com/photo-1524805444973-bf35d6736c92?q=80&w=800&auto=format&fit=crop" alt="Men Watches">
+        <div class="vt-cat-content"><b>Men's Watches</b><span>Shop Now →</span></div>
+      </a>
+      <a href="{% url 'products' %}?category=women" class="vt-cat">
+        <img src="https://images.unsplash.com/photo-1548169874-53e85f753f1e?q=80&w=800&auto=format&fit=crop" alt="Women Watches">
+        <div class="vt-cat-content"><b>Women's Watches</b><span>Shop Now →</span></div>
+      </a>
+      <a href="{% url 'products' %}?category=smart" class="vt-cat">
+        <img src="https://images.unsplash.com/photo-1508685096489-7aacd43bd3b2?q=80&w=800&auto=format&fit=crop" alt="Smart Watches">
+        <div class="vt-cat-content"><b>Smart Watches</b><span>Shop Now →</span></div>
+      </a>
+      <a href="{% url 'products' %}?category=couple" class="vt-cat">
+        <img src="https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?q=80&w=800&auto=format&fit=crop" alt="Couple Watches">
+        <div class="vt-cat-content"><b>Couple Editions</b><span>Shop Now →</span></div>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- FLASH DEALS -->
+<section class="vt-section" style="background:#fdfaf5;border-top:1px solid #eee8e0;border-bottom:1px solid #eee8e0">
+  <div class="vt-container">
+    <div class="vt-deal-banner mb-4">
+      <div class="vt-deal-left">
+        <div class="vt-kicker" style="color:#c8232c">Flash Deals • Ends Today</div>
+        <h2 style="font-size:30px;font-weight:800;font-family:'Playfair Display',serif">Up to 45% OFF</h2>
+        <div class="d-flex gap-2 my-3" id="flashTimer">
+          <div class="vt-time"><strong id="tH">12</strong><div style="font-size:10px">HOURS</div></div>
+          <div class="vt-time"><strong id="tM">45</strong><div style="font-size:10px">MINS</div></div>
+          <div class="vt-time"><strong id="tS">18</strong><div style="font-size:10px">SECS</div></div>
+        </div>
+        <a href="{% url 'products' %}?deal=flash" class="btn btn-dark rounded-pill px-4">Shop Flash Deals</a>
+      </div>
+      <div class="vt-deal-img">
+        <img src="https://images.unsplash.com/photo-1548169874-53e85f753f1e?q=80&w=1000&auto=format&fit=crop" alt="Flash Deal">
+      </div>
+    </div>
+
+    <div class="vt-sec-head"><h2>Deals of The Day</h2><a href="{% url 'products' %}" style="font-size:13px;font-weight:800;color:#111;text-decoration:none">View all →</a></div>
+
+    <div class="vt-scroll">
+      {% for product in flash_deals %}
+      <div class="vt-product">
+        <div class="vt-product-img">
+          {% if product.image %}<img src="{{ product.image.url }}" alt="{{ product.name }}">
+          {% else %}<img src="https://images.unsplash.com/photo-1523170335258-f5ed11844a49?q=80&w=600&auto=format&fit=crop" alt="{{ product.name }}">{% endif %}
+        </div>
+        <div class="vt-product-body">
+          <div class="vt-product-title">{{ product.name }}</div>
+          <div class="vt-price-now">Rs. {{ product.price }}</div>
+          <button class="vt-add mt-2" data-add-to-cart data-product-id="{{ product.id }}" data-product-name="{{ product.name }}" data-product-price="{{ product.price }}">Add to Cart</button>
+        </div>
+      </div>
+      {% empty %}
+      <div style="padding:24px;background:#fff;border:1px dashed #ddd;border-radius:14px">Add products from admin to show deals.</div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<!-- NEW ARRIVALS -->
+<section class="vt-section">
+  <div class="vt-container">
+    <div class="vt-sec-head"><h2>New Arrivals</h2></div>
+    <div class="vt-scroll">
+      {% for product in new_arrivals %}
+      <div class="vt-product">
+        <div class="vt-product-img">
+          {% if product.image %}<img src="{{ product.image.url }}" alt="{{ product.name }}">
+          {% else %}<img src="https://images.unsplash.com/photo-1523170335258-f5ed11844a49?q=80&w=600&auto=format&fit=crop" alt="{{ product.name }}">{% endif %}
+        </div>
+        <div class="vt-product-body">
+          <div class="vt-product-title">{{ product.name }}</div>
+          <div class="vt-price-now mt-1">Rs. {{ product.price }}</div>
+          <button class="vt-add mt-2" data-add-to-cart data-product-id="{{ product.id }}" data-product-name="{{ product.name }}" data-product-price="{{ product.price }}">Add to Cart</button>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<!-- BESTSELLERS -->
+<section class="vt-section" style="padding-top:0">
+  <div class="vt-container">
+    <div class="vt-sec-head"><h2>Best Sellers</h2><a href="{% url 'products' %}" style="font-size:13px;font-weight:800;color:#111;text-decoration:none">View all →</a></div>
+    <div class="row g-3">
+      {% for product in best_sellers %}
+      <div class="col-6 col-md-3">
+        <div class="vt-product">
+          <div class="vt-product-img">
+            {% if product.image %}<img src="{{ product.image.url }}" alt="{{ product.name }}">
+            {% else %}<img src="https://images.unsplash.com/photo-1524805444973-bf35d6736c92?q=80&w=600&auto=format&fit=crop" alt="{{ product.name }}">{% endif %}
+          </div>
+          <div class="vt-product-body">
+            <div class="vt-product-title">{{ product.name }}</div>
+            <div class="vt-price-now">Rs. {{ product.price }}</div>
+            <button class="vt-add mt-2" data-add-to-cart data-product-id="{{ product.id }}" data-product-name="{{ product.name }}" data-product-price="{{ product.price }}">Add to Cart</button>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<!-- TRUST -->
+<section class="vt-section" style="padding-top:0">
+  <div class="vt-container">
+    <div class="vt-trust">
+      <div><i class="bi bi-truck fs-4"></i><div><strong style="font-size:12px">Free Delivery</strong><br><span class="small text-secondary">Across Pakistan</span></div></div>
+      <div><i class="bi bi-arrow-counterclockwise fs-4"></i><div><strong style="font-size:12px">30-Day Returns</strong><br><span class="small text-secondary">Easy exchange</span></div></div>
+      <div><i class="bi bi-shield-check fs-4"></i><div><strong style="font-size:12px">1-Year Warranty</strong><br><span class="small text-secondary">On all watches</span></div></div>
+      <div><i class="bi bi-gift fs-4"></i><div><strong style="font-size:12px">Free Gift Box</strong><br><span class="small text-secondary">Premium packaging</span></div></div>
+    </div>
+  </div>
+</section>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+(() => {
+  const end = new Date(Date.now() + 12*60*60*1000);
+  const hEl = document.getElementById('tH'), mEl = document.getElementById('tM'), sEl = document.getElementById('tS');
+  if(hEl){ setInterval(()=>{ const d=Math.max(0,end-new Date()); hEl.textContent=String(Math.floor(d/3600000)).padStart(2,'0'); mEl.textContent=String(Math.floor(d%3600000/60000)).padStart(2,'0'); sEl.textContent=String(Math.floor(d%60000/1000)).padStart(2,'0'); },1000); }
+})();
+</script>
+{% endblock %}
